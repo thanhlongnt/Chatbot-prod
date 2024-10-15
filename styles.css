@@ -1,0 +1,186 @@
+/* General Styling */
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: 'Arial', sans-serif;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #242e38;
+  box-sizing: border-box;
+}
+
+.container {
+  display: flex;
+  position: relative;
+  margin: auto;
+  width: 100%;
+  height: 100%;
+  max-width: 1000px; /* Adjust max-width for large screens */
+  max-height: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* More pronounced shadow */
+  background-color: rgb(106, 88, 88); /* Uniform background for the whole container */
+}
+
+/* Info Section */
+.info-section {
+  background-color:rgb(106, 88, 88);
+  width: 50%;
+  padding: 20px;
+  box-shadow: inset -5px 0 10px rgba(0, 0, 0, 0.1); /* Subtle shadow to separate sections */
+  transform: translateX(-100%);
+  transition: transform 0.6s ease-out;
+}
+
+/* Chatbot Section */
+.chatbot-section {
+  background-color: white;
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.6s ease-out;
+  width: 100%;
+  height: 100%;
+  padding: 30px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.chatbot {
+  text-align: center;
+  transition: all 0.6s ease-out;
+  width: 100%;
+}
+
+#chatArea {
+  border: 1px solid #dee2e6;
+  height: 600px;
+  width: 100%;
+  max-width: 500px;
+  overflow-y: auto;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Softer shadow */
+}
+
+input {
+  padding: 12px;
+  margin-top: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: calc(100% - 25px);
+  box-sizing: border-box;
+}
+
+button {
+  padding: 12px 18px;
+  margin-left: 10px;
+  cursor: pointer;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+/* Expand/shrink transitions */
+.slide-right {
+  width: 75%;
+}
+
+.expand-info {
+  transform: translateX(0);
+}
+
+.hide-info {
+  transform: translateX(-100%);
+}
+
+.chatbot-expanded {
+  width: 100%;
+}
+
+/* Modal overlay */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  justify-content: center;
+  align-items: center;
+}
+
+/* Modal content box */
+.modal-content {
+  background-color: white;
+  padding: 25px;
+  border-radius: 8px;
+  max-width: 500px;
+  text-align: center;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.modal-actions {
+  margin-top: 20px;
+}
+
+.modal-btn {
+  padding: 12px 24px;
+  margin: 0 10px;
+  cursor: pointer;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.modal-btn:hover {
+  background-color: #0056b3;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    max-width: 100%;
+    max-height: 100%;
+  }
+
+  .info-section {
+    width: 100%;
+    height: auto;
+    box-shadow: none;
+    transform: none; /* Always show info-section on small screens */
+  }
+
+  .chatbot-section {
+    width: 100%;
+    padding: 20px;
+  }
+
+  #chatArea {
+    height: 400px;
+    max-width: 100%;
+  }
+}
+
+.ucsd-logo {
+  position: absolute;
+  top: 0;       /* Position it at the top */
+  right: 0;     /* Position it at the right */
+  /* Optional: You can add some padding or margins if you want some space from the edge */
+  margin: 10px;
+}

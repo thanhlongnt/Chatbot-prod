@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chatbot with Info Section and Consent</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- Chatbot and Info Section Container -->
+    <div class="container">
+      <!-- Info Section (initially hidden) -->
+      <div id="infoSection" class="info-section hide-info">
+        <!-- Placeholder for dynamically added content -->
+        <p>Information will appear here based on chatbot responses.</p>
+      </div>
+
+      <!-- Chatbot Section -->
+      <div id="chatbotSection" class="chatbot-section chatbot-expanded">
+        <div class="chatbot">
+          <div id="chatArea">
+            <!-- Chat history will be added here -->
+          </div>
+          <input type="text" id="userInput" placeholder="Type a message" />
+          <button onclick="sendMessage()">Send</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Consent Modal -->
+    <div id="consentModal" class="modal">
+      <div class="modal-content">
+        <h2>Consent Required</h2>
+        <p>
+          You are being invited to participate in a research study titled A
+          study of chatbots to aid debugging. 
+        </p>
+        <p>This study is being done by Michael Coblenz & Thanh-Long Nguyen-Trong from UC San Diego CSE
+          Department. The purpose of this research study is to test the
+          effectiveness of a new debugging tool. If you agree to take part in
+          this study, you will be asked to request debugging help from our tool.
+          Your participation in this study is completely voluntary and you can
+          withdraw at any time. 
+        </p>
+        <p>
+          You are free to skip any question that you
+          choose. If you have questions about this project or if you have a
+          research-related problem, you may contact the researcher, Michael
+          Coblenz, mcoblenz@ucsd.edu. If you have any questions concerning your
+          rights as a research subject, you may contact the UC San Diego Office
+          of IRB Administration at irb@ucsd.edu or 858-246-4777. 
+        </p>
+        <p>
+          By participating in this research you are indicating that you are at
+          least 18 years old, have read this information sheet, and agree to
+          participate in this research study. Please keep this information sheet
+          for your records.
+        </p>
+        <label for="emailInput">Email:</label>
+        <input
+          type="email"
+          id="emailInput"
+          placeholder="Enter your email"
+          required
+        />
+        <div class="modal-actions">
+          <button id="consentAgree" class="modal-btn">Agree</button>
+          <button id="consentDecline" class="modal-btn">Decline</button>
+        </div>
+      </div>
+    </div>
+
+    <img src="images.png" alt="Image", class="ucsd-logo">
+
+
+    <script src="script.js"></script>
+  </body>
+</html>
