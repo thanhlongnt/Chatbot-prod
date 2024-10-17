@@ -22,13 +22,30 @@ function sendMessage() {
 
   // Simulate chatbot response with a delay
   setTimeout(() => {
-    const botMessage = "This is a response from the chatbot!";
-    const botMsgElem = document.createElement("p");
-    botMsgElem.textContent = "Bot: " + botMessage;
-    chatArea.appendChild(botMsgElem);
+    // var botMessage = "This is a response from the chatbot!";
+    fetch("https://446wc80hoi.execute-api.us-east-2.amazonaws.com/Test1", {
+      method: 'GET',
+      mode: "cors"
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Append the response from the backend to the conversation
+        var botMessage = data;
+        const botMsgElem = document.createElement("p");
+        botMsgElem.textContent = "Bot: " + botMessage;
+        chatArea.appendChild(botMsgElem);
+        // infoSection.innerHTML = `<p>New information based on your message: "${botMessage}"</p>`;
+        
+    })
+    .catch(error => console.error('Error:', error));
+    
+    // const botMsgElem = document.createElement("p");
+    // botMsgElem.textContent = "Bot: " + botMessage;
+    // chatArea.appendChild(botMsgElem);
 
     // Update the info section with new content
-    infoSection.innerHTML = `<p>New information based on your message: "${userMessage}"</p>`;
+    
+    
 
     // Make the info section visible again and shrink the chatbot
     infoSection.classList.remove("hide-info");
