@@ -3,61 +3,192 @@ const chatbotSection = document.getElementById("chatbotSection");
 const infoSection = document.getElementById("infoSection");
 const chatArea = document.getElementById("chatArea");
 const userInput = document.getElementById("userInput");
+const send = document.getElementById("send");
+var message_entry = 0;
+// generate a random conversation id
+const conversation_id = Math.floor(Math.random() * 1000000);
+const responses = new Set();
+isButton = false;
+isYes = false;
 
-function sendMessage() {
-  const userMessage = userInput.value;
+const botMsg = document.createElement("p");
+botMsg.textContent = "Bot: " + "Hello, I am debugging chatbot! Please describe your bug and I will try to give you a stratergy to help";
+botMsg.style.textAlign = "left";
+chatArea.appendChild(botMsg);
+chatArea.scrollTop = chatArea.scrollHeight;
 
-  if (userMessage.trim() === "") return; // Don't send if input is empty
+async function sendMessage() {
+  userMessage = "";
+  if (isButton){
+    if(isYes){
+      userMessage = "yes";
+    }
+    else {
+      userMessage = "no"
+    }
+    button = false;
+  }
+  else {
+    console.log("hello world");
+    userMessage = userInput.value;
+    if (userMessage.trim() === "") return; // Don't send if input is empty
+    userInput.remove();
+    send.remove();
+
+
+  }
 
   // Add user's message to chat area
   const userMsgElem = document.createElement("p");
   userMsgElem.textContent = "You: " + userMessage;
+  userMsgElem.style.textAlign = "right";
+
   chatArea.appendChild(userMsgElem);
+  chatArea.scrollTop = chatArea.scrollHeight;
+  
+  if ((message_entry > 0)){
+    if (userMessage.toLowerCase() == "yes"){
+      setTimeout(() => {
+        const botMsgElem = document.createElement("p");
+        botMsgElem.textContent = "Bot: " + "Thank you so much for using our tool! Please fill out this short survey on your experience with this tool.";
+        botMsgElem.style.textAlign = "left";
+        chatArea.appendChild(botMsgElem);
+        chatArea.scrollTop = chatArea.scrollHeight;
+        console.log(botMessage);
+      }, 1000)
+      userInput.value = ""
+      return;
 
+    }
+    else if (userMessage.toLowerCase() != "no"){
+      setTimeout(() => {
+        const botMsgElem = document.createElement("p");
+        botMsgElem.textContent = "Bot: " + "Invalid, please respond with yes or no";
+        botMsgElem.style.textAlign = "left";
+        chatArea.appendChild(botMsgElem);
+        chatArea.scrollTop = chatArea.scrollHeight;
+      }, 1000)
+      userInput.value = ""
+      return;
+    }
+  }
   // Hide the info section and expand the chatbot back to full width
-  infoSection.classList.remove("expand-info");
-  infoSection.classList.add("hide-info");
-  chatbotSection.classList.remove("slide-right");
-  chatbotSection.classList.add("chatbot-expanded"); // Expand chatbot
-
+  
   // Simulate chatbot response with a delay
+  var botMsg = await getResponse();
+  if (botMsg == null){
+    return;
+  }
+  updateStrategyContent(botMsg, true);
+
+  // Shrink the chatbot to make room for the info section
   setTimeout(() => {
-    // var botMessage = "This is a response from the chatbot!";
-    fetch("https://446wc80hoi.execute-api.us-east-2.amazonaws.com/Test1", {
+  }, 1000)
+
+  if (getCookie("userConsent")) {
+    console.log(getCookie("userEmail"));
+  
+    fetch("https://446wc80hoi.execute-api.us-east-2.amazonaws.com/Test1",
+      {
+          method: 'POST', 'mode': 'cors',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            "session_id": String(conversation_id),
+            "entry_number": String(message_entry),
+            "Email": String(getCookie("userEmail")),
+            "question": userMessage,
+            "chatbot_output": botMsg,
+            "time": String(new Date()),
+          })
+      })
+      .then(response => {
+          return response.json();
+      })
+      .then(data => console.log(data))
+      .catch(error => console.log(error));
+  }
+
+  // Clear the input
+  userInput.value = "";
+  message_entry += 1;
+}
+
+function getResponse(){
+  if (responses.size == 6){
+    const botMsgElem = document.createElement("p");
+    botMsgElem.textContent = "Bot: " + "No more stratergies, please come back later!";
+    botMsgElem.style.textAlign = "left";
+    chatArea.appendChild(botMsgElem);
+    chatArea.scrollTop = chatArea.scrollHeight;
+    console.log(botMessage);
+    return null;
+  }
+  var botMessage = null;
+  while (botMessage == null){
+    botMessage = fetch("https://446wc80hoi.execute-api.us-east-2.amazonaws.com/Test1", {
       method: 'GET',
       mode: "cors"
     })
     .then(response => response.json())
     .then(data => {
         // Append the response from the backend to the conversation
-        var botMessage = data;
+        botMessage = data;
+        if (responses.has(data)) {
+          return null;
+        }
+        else{
+          responses.add(data)
+        }
         const botMsgElem = document.createElement("p");
         botMsgElem.textContent = "Bot: " + botMessage;
+        botMsgElem.style.textAlign = "left";
         chatArea.appendChild(botMsgElem);
-        // infoSection.innerHTML = `<p>New information based on your message: "${botMessage}"</p>`;
-        
+        console.log(botMessage);
+        chatArea.scrollTop = chatArea.scrollHeight;
+  
+        setTimeout(() => {
+          const botMsgFeedback = document.createElement("p");
+          botMsgFeedback.style.textAlign = "left";
+          botMsgFeedback.textContent = "Bot: Was this a helpful response? If you didn't find it helpful, please type no and I will give you another response. If you found the stratergy to be helpful, please type yes to end the conversation.";
+          chatArea.appendChild(botMsgFeedback);
+
+          const button = document.createElement('button');
+          button.textContent = 'yes'; // Set the button text
+          button.id = "yes"; // Add an ID (optional)
+          button.className = 'btn'; // Add a class (optional)
+
+          button.addEventListener('click', () => {
+              isButton = true;
+              isYes = true;
+              sendMessage();
+          });
+          chatArea.appendChild(button);
+
+          const button2 = document.createElement('button');
+          button2.textContent = 'no'; // Set the button text
+          button2.id = "no"; // Add an ID (optional)
+          button2.className = 'btn'; // Add a class (optional)
+
+          button2.addEventListener('click', () => {
+              isButton = true;
+              isYes = false;
+              sendMessage();
+          });
+          chatArea.appendChild(button2);
+
+
+
+          chatArea.scrollTop = chatArea.scrollHeight;
+        }, 2000);
+        return data;        
     })
     .catch(error => console.error('Error:', error));
-    
-    // const botMsgElem = document.createElement("p");
-    // botMsgElem.textContent = "Bot: " + botMessage;
-    // chatArea.appendChild(botMsgElem);
+  }  
+  console.log(botMessage);
 
-    // Update the info section with new content
-    
-    
-
-    // Make the info section visible again and shrink the chatbot
-    infoSection.classList.remove("hide-info");
-    infoSection.classList.add("expand-info");
-
-    // Shrink the chatbot to make room for the info section
-    chatbotSection.classList.remove("chatbot-expanded");
-    chatbotSection.classList.add("slide-right");
-  }, 1000); // Simulating delay for bot response
-
-  // Clear the input
-  userInput.value = "";
+  return botMessage;
 }
 
 // Helper functions to handle cookies
@@ -165,4 +296,104 @@ function enableInputStorage() {
 function disableInputStorage() {
   console.log("Consent declined. Input storage is disabled.");
   // Code to disable input storage (e.g., prevent messages from being stored)
+}
+
+function updateStrategyContent(strategyId, newButton) {
+  const title = document.getElementById('strategy-title');
+  const explanation = document.getElementById('strategy-explanation');
+  const example = document.getElementById('strategy-example');
+  const codingExample = document.getElementById('strategy-coding-example');
+  const additions = document.getElementById('strategy-additions');
+  
+  var message = ""
+
+  infoSection.classList.remove("expand-info");
+  infoSection.classList.add("hide-info");
+  chatbotSection.classList.remove("slide-right");
+  chatbotSection.classList.add("chatbot-expanded"); // Expand chatbot
+  
+  setTimeout(() => {
+    switch (strategyId) {
+        case "Did you try minimizing your test cases?":
+            title.textContent = window.getTestCaseMinimization.title;
+            explanation.textContent = window.getTestCaseMinimization.explanation;
+            example.textContent = window.getTestCaseMinimization.example;
+            codingExample.textContent = window.getTestCaseMinimization.codingExample;
+            additions.textContent = window.getTestCaseMinimization.additions;
+            message = window.getTestCaseMinimization.title;
+            break;
+        
+        case "Have you tried narryowing down the responsible code?":
+            title.textContent = window.getNarrowingResponsibleCode.title;
+            explanation.textContent = window.getNarrowingResponsibleCode.explanation;
+            example.textContent = window.getNarrowingResponsibleCode.example;
+            additions.textContent = window.getNarrowingResponsibleCode.additions;
+            codingExample.textContent = window.getNarrowingResponsibleCode.codingExample;
+            message = window.getNarrowingResponsibleCode.title;
+            break;
+
+        case "Hmmmm this sounds interesting. Have you tried regression testing?":
+            title.textContent = window.getRegressionTesting.title;
+            explanation.textContent = window.getRegressionTesting.explanation;
+            example.textContent = window.getRegressionTesting.example;
+            additions.textContent = window.getRegressionTesting.additions;
+            codingExample.textContent = window.getRegressionTesting.codingExample;
+            message = window.getRegressionTesting.title;
+            break;
+        case "Ok. Have you tried using the bad state stratergy?":
+            title.textContent = window.getBadState.title;
+            explanation.textContent = window.getBadState.explanation;
+            example.textContent = window.getBadState.example;
+            additions.textContent = window.getBadState.additions;
+            codingExample.textContent = window.getBadState.codingExample;
+            message = window.getBadState.title;
+            break;
+
+        case "Did you try identifying Relative Code and State?":
+          title.textContent = window.getIdentifyRelativeCode.title;
+          explanation.textContent = window.getIdentifyRelativeCode.explanation;
+          example.textContent = window.getIdentifyRelativeCode.example;
+          additions.textContent = window.getIdentifyRelativeCode.additions;
+          codingExample.textContent = window.getIdentifyRelativeCode.codingExample;
+          message = window.getIdentifyRelativeCode.title;
+          break;
+        
+        case "Have you tried to ask an expert?":
+          title.textContent = window.getAskAnExpert.title;
+          explanation.textContent = window.getAskAnExpert.explanation;
+          example.textContent = window.getAskAnExpert.example;
+          additions.textContent = window.getAskAnExpert.additions;
+          codingExample.textContent = window.getAskAnExpert.codingExample;
+          message = window.getAskAnExpert.title;
+          break;
+        case "Have you tried using print statements?":
+          title.textContent = window.getPrintStatements.title;
+          explanation.textContent = window.getPrintStatements.explanation;
+          example.textContent = window.getPrintStatements.example;
+          additions.textContent = window.getPrintStatements.additions;
+          codingExample.textContent = window.getPrintStatements.codingExample;
+          message = window.getPrintStatements.title;
+          break;      
+    }
+  
+  
+    infoSection.classList.remove("hide-info");
+    infoSection.classList.add("expand-info");
+  }, 1000); // Simulating delay for bot response
+  
+  if (newButton) {  
+    setTimeout(() => {
+      const button = document.createElement('button');
+      button.textContent = 'Click to see "' + message + '" again'; // Set the button text
+      button.id = message_entry; // Add an ID (optional)
+      button.className = 'btn'; // Add a class (optional)
+
+      button.addEventListener('click', () => {
+          updateStrategyContent(strategyId, false);
+      });
+      chatArea.appendChild(button);
+    }, 1000); // Simulating delay for bot response
+  }
+
+  return message;
 }
