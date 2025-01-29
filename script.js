@@ -88,7 +88,7 @@ async function sendMessage() {
   if (getCookie("userConsent")) {
     console.log(getCookie("userEmail"));
   
-    fetch("https://446wc80hoi.execute-api.us-east-2.amazonaws.com/Test1",
+    fetch("https://90nnqg2igk.execute-api.us-west-1.amazonaws.com/Innitial/Chatbot_prod",
       {
           method: 'POST', 'mode': 'cors',
           headers: {
@@ -127,7 +127,7 @@ function getResponse(){
   }
   var botMessage = null;
   while (botMessage == null){
-    botMessage = fetch("https://446wc80hoi.execute-api.us-east-2.amazonaws.com/Test1", {
+    botMessage = fetch("https://90nnqg2igk.execute-api.us-west-1.amazonaws.com/Innitial/Chatbot_prod", {
       method: 'GET',
       mode: "cors"
     })
