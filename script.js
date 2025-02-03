@@ -5,11 +5,12 @@ const chatArea = document.getElementById("chatArea");
 const userInput = document.getElementById("userInput");
 const send = document.getElementById("send");
 var message_entry = 0;
+
 // generate a random conversation id
 const conversation_id = Math.floor(Math.random() * 1000000);
 const responses = new Set();
 isButton = false;
-isYes = false;
+button_id = "";
 
 const botMsg = document.createElement("p");
 botMsg.textContent = "Bot: " + "Hello, I am debugging chatbot! Please describe your bug and I will try to give you a stratergy to help";
@@ -20,13 +21,19 @@ chatArea.scrollTop = chatArea.scrollHeight;
 async function sendMessage() {
   userMessage = "";
   if (isButton){
-    if(isYes){
-      userMessage = "yes";
+    switch(button_id){
+      case "yes":
+        userMessage = "yes";
+        break;
+      
+      case "no":
+        userMessage = "no"
+        break;
+
+      case "yes, but new strat":
+        userMessage = "yes, but new strat"
     }
-    else {
-      userMessage = "no"
-    }
-    button = false;
+
   }
   else {
     console.log("hello world");
@@ -35,7 +42,20 @@ async function sendMessage() {
     userInput.remove();
     send.remove();
 
-
+    const restart = document.createElement('button');
+    restart.textContent = 'restart'; // Set the button text
+    restart.id = message_entry; // Add an ID (optional)
+    restart.className = 'btn'; // Add a class (optional)
+    restart.addEventListener('click', () => {
+      chatArea.innerHTML = ""
+      restart.remove()
+      let div = document.querySelector('.chatbot');
+      div.appendChild(userInput);
+      div.appendChild(send);
+      
+    });
+    let div = document.querySelector('.chatbot');
+    div.appendChild(restart);
   }
 
   // Add user's message to chat area
@@ -59,17 +79,6 @@ async function sendMessage() {
       userInput.value = ""
       return;
 
-    }
-    else if (userMessage.toLowerCase() != "no"){
-      setTimeout(() => {
-        const botMsgElem = document.createElement("p");
-        botMsgElem.textContent = "Bot: " + "Invalid, please respond with yes or no";
-        botMsgElem.style.textAlign = "left";
-        chatArea.appendChild(botMsgElem);
-        chatArea.scrollTop = chatArea.scrollHeight;
-      }, 1000)
-      userInput.value = ""
-      return;
     }
   }
   // Hide the info section and expand the chatbot back to full width
@@ -161,7 +170,7 @@ function getResponse(){
 
           button.addEventListener('click', () => {
               isButton = true;
-              isYes = true;
+              button_id = "yes";
               sendMessage();
           });
           chatArea.appendChild(button);
@@ -173,12 +182,22 @@ function getResponse(){
 
           button2.addEventListener('click', () => {
               isButton = true;
-              isYes = false;
+              button_id = "no";
               sendMessage();
           });
           chatArea.appendChild(button2);
 
+          const button3 = document.createElement('button');
+          button3.textContent = 'yes, but new strat'; // Set the button text
+          button3.id = "yes, but new strat"; // Add an ID (optional)
+          button3.className = 'btn'; // Add a class (optional)
 
+          button3.addEventListener('click', () => {
+              isButton = true;
+              button_id = "yes, but new strat";
+              sendMessage();
+          });
+          chatArea.appendChild(button3);
 
           chatArea.scrollTop = chatArea.scrollHeight;
         }, 2000);
