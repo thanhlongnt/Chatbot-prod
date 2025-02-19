@@ -20,7 +20,7 @@ body, html {
   max-width: 1000px; /* Adjust max-width for large screens */
   max-height: 100%;
   border-radius: 12px;
-  overflow: hidden;
+  overflow: break-word;
   /* box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); More pronounced shadow */
   background-color: rgb(255, 255, 255); /* Uniform background for the whole container */
 }
@@ -29,6 +29,7 @@ body, html {
 .info-section {
   background-color:rgb(255, 255, 255);
   width: 100%;
+  max-height: 1000px;
   padding: 20px;
   /* box-shadow: inset -5px 0 10px rgba(0, 0, 0, 0.1); Subtle shadow to separate sections */
   transform: translateX(-100%);
@@ -166,6 +167,7 @@ button:hover {
     height: auto;
     box-shadow: none;
     transform: none; /* Always show info-section on small screens */
+    padding: 20%;
   }
 
   .chatbot-section {

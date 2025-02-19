@@ -1,67 +1,75 @@
-# Step 1: Original Code (Suspected Bug in Framework)
-import pandas as pd
+import math
 
-def process_data(file_path):
-    """
-    Processes a CSV file and calculates the mean of a specific column.
-    """
-    print("Reading data...")
-    data = pd.read_csv(file_path)
-    print(f"Data read successfully:\n{data.head()}")
-    
-    print("Calculating mean of column 'value'...")
-    mean_value = data['value'].mean()
-    print(f"Mean value: {mean_value}")
-    return mean_value
+# Step 1: Define the AreaCalculator class
+# The class is responsible for computing the area of various shapes.
+class AreaCalculator:
+    def circle_area(self, radius):
+        return math.pi * radius * radius  # Formula: πr²
 
-# Test the original function with a sample file
-try:
-    result = process_data("sample.csv")  # Assume sample.csv is provided
-    print(f"Processed result: {result}")
-except Exception as e:
-    print(f"Error encountered: {e}")
+    def rectangle_area(self, width, height):
+        return width * height  # Formula: width × height
 
+    def triangle_area(self, base, height):
+        return base / 2 + height  # ❌ Bug: Incorrect formula!
 
-# Step 2: Replace Framework Code with a Mock Module
-def mock_read_csv(file_path):
-    """
-    Mock version of pd.read_csv that simulates data reading.
-    """
-    print(f"Mock read_csv called with file_path: {file_path}")
-    # Simulate a correct dataset
-    mock_data = {
-        "value": [1, 2, 3, 4, 5]
-    }
-    print(f"Mock data returned:\n{mock_data}")
-    return pd.DataFrame(mock_data)
+# Step 2: Test the functions with known values
+calculator = AreaCalculator()
 
-# Monkey-patch the pandas read_csv function with the mock version
-pd.read_csv = mock_read_csv
+# Expected Outputs:
+# - Circle with radius 5: π * 5² ≈ 78.54
+# - Rectangle 4x6: 4 * 6 = 24
+# - Triangle base=3, height=8: (1/2) * 3 * 8 = 12
+print("Circle area (r=5):", calculator.circle_area(5))  # Expected: 78.54
+print("Rectangle area (4x6):", calculator.rectangle_area(4, 6))  # Expected: 24
+print("Triangle area (3,8):", calculator.triangle_area(3, 8))  # Expected: 12, but wrong!
 
-# Test the function with the mock module
-print("\n--- Testing with Mock Module ---")
-try:
-    result = process_data("sample.csv")
-    print(f"Processed result with mock: {result}")
-except Exception as e:
-    print(f"Error with mock module: {e}")
+# Output:
+# Circle area (r=5): 78.53981633974483 ✅ Correct
+# Rectangle area (4x6): 24 ✅ Correct
+# Triangle area (3,8): 9.5 ❌ Incorrect! Expected: 12
+# File a bug ticket or debug the library yourself
 
+# Step 3: Narrowing Down the Responsible Code
+# The issue is with `triangle_area()`, so let's isolate and test it separately.
+def triangle_area_debug(base, height):
+    return base / 2 + height  # Suspicious addition instead of multiplication
 
-# Step 3: Narrow Down the Bug with a Broken Example
-# Create a small broken example to test if the bug is in the framework or logic
-print("\n--- Testing Framework with Minimal Example ---")
-try:
-    # Deliberately create a broken example to test the framework
-    broken_data = pd.DataFrame({"value": [None, None, None]})
-    print(f"Broken data:\n{broken_data}")
-    mean_value = broken_data['value'].mean()
-    print(f"Mean value of broken data: {mean_value}")
-except Exception as e:
-    print(f"Framework bug detected: {e}")
+print("Debugging triangle_area(3,8):", triangle_area_debug(3, 8))  # Still wrong! (Expected: 12)
 
+# Step 4: Identify the mistake
+# The formula should be (1/2) * base * height, but we used `base / 2 * height`
+# This means 3 / 2 + 8 = 1.5 * 8 = 9.5 instead of 12
 
-# Step 4: Debug or Report Framework Bug
-# (If framework is confirmed as the issue)
-print("\n--- Last Resort: Debug into Framework ---")
-# If a bug in the framework is suspected, use debugging tools or step through the framework code
-# e.g., Use a debugger to examine internal calls in pd.read_csv or pd.DataFrame.mean
+# Step 5: Fix the function by replacing faulty code with known good code
+class AreaCalculatorFixed:
+    def circle_area(self, radius):
+        return math.pi * radius * radius
+
+    def rectangle_area(self, width, height):
+        return width * height
+
+    def triangle_area(self, base, height):
+        return 0.5 * base * height  # ✅ Fixed formula!
+
+# Step 6: Verify the fix
+calculator_fixed = AreaCalculatorFixed()
+print("Fixed Triangle area (3,8):", calculator_fixed.triangle_area(3, 8))  # Expected: 12 ✅
+
+# Step 7: Additional verification
+# If we suspected a bug in Python's math module, we could test it separately.
+print("Verifying math.pi:", math.pi)  # Expected: 3.141592653589793 (Correct)
+
+# Step 8: Edge Case Handling
+# If an empty or invalid input were an issue, we could handle it explicitly:
+class AreaCalculatorSafe:
+    def circle_area(self, radius):
+        return math.pi * radius * radius if radius > 0 else 0
+
+    def rectangle_area(self, width, height):
+        return width * height if width > 0 and height > 0 else 0
+
+    def triangle_area(self, base, height):
+        return 0.5 * base * height if base > 0 and height > 0 else 0  # Prevents negative inputs
+
+calculator_safe = AreaCalculatorSafe()
+print("Safe Triangle area (-3,8):", calculator_safe.triangle_area(-3, 8))  # Should return 0 instead of an error

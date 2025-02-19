@@ -4,7 +4,21 @@ const infoSection = document.getElementById("infoSection");
 const chatArea = document.getElementById("chatArea");
 const userInput = document.getElementById("userInput");
 const send = document.getElementById("send");
+const strat_display = document.querySelector(".strategy-display");
+
+// strat_display.innerHTML = ""; // Clear any existing content
+
+// var jupyter = document.createElement("iframe");
+// jupyter.src = "cse152a_wi25_hw1.html"; 
+// jupyter.style.width = "100%";
+// jupyter.style.height = "100%"; 
+
+// chatArea.appendChild(jupyter);
+
+
 var message_entry = 0;
+infoSection.classList.remove("hide-info");
+infoSection.classList.add("expand-info");
 
 // generate a random conversation id
 const conversation_id = Math.floor(Math.random() * 1000000);
@@ -104,7 +118,7 @@ async function sendMessage() {
               'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            "session_id": String(conversation_id),
+            "session-id": String(conversation_id),
             "entry_number": String(message_entry),
             "Email": String(getCookie("userEmail")),
             "question": userMessage,
@@ -318,88 +332,98 @@ function disableInputStorage() {
 }
 
 function updateStrategyContent(strategyId, newButton) {
-  const title = document.getElementById('strategy-title');
-  const explanation = document.getElementById('strategy-explanation');
-  const example = document.getElementById('strategy-example');
-  const codingExample = document.getElementById('strategy-coding-example');
-  const additions = document.getElementById('strategy-additions');
+  // const title = document.getElementById('strategy-title');
+  // const explanation = document.getElementById('strategy-explanation');
+  // const example = document.getElementById('strategy-example');
+  // const codingExample = document.getElementById('strategy-coding-example');
+  // const additions = document.getElementById('strategy-additions');
   
-  var message = ""
+  // var message = ""
 
   infoSection.classList.remove("expand-info");
   infoSection.classList.add("hide-info");
-  chatbotSection.classList.remove("slide-right");
-  chatbotSection.classList.add("chatbot-expanded"); // Expand chatbot
+
+  // chatbotSection.classList.remove("slide-right");
+  // chatbotSection.classList.add("chatbot-expanded"); // Expand chatbot
+
+  // var jupyter = document.createElement("iframe");
+  // jupyter.src = "cse152a_wi25_hw1.html"; 
+  // jupyter.style.width = "100%";
+  // jupyter.style.height = "600px";
+
+  // strat_display.appendChild(jupyter);
   
   setTimeout(() => {
-    switch (strategyId) {
-        case "Did you try minimizing your test cases?":
-            title.textContent = window.getTestCaseMinimization.title;
-            explanation.textContent = window.getTestCaseMinimization.explanation;
-            example.textContent = window.getTestCaseMinimization.example;
-            codingExample.textContent = window.getTestCaseMinimization.codingExample;
-            additions.textContent = window.getTestCaseMinimization.additions;
-            message = window.getTestCaseMinimization.title;
-            break;
-        
-        case "Have you tried narryowing down the responsible code?":
-            title.textContent = window.getNarrowingResponsibleCode.title;
-            explanation.textContent = window.getNarrowingResponsibleCode.explanation;
-            example.textContent = window.getNarrowingResponsibleCode.example;
-            additions.textContent = window.getNarrowingResponsibleCode.additions;
-            codingExample.textContent = window.getNarrowingResponsibleCode.codingExample;
-            message = window.getNarrowingResponsibleCode.title;
-            break;
+    document.getElementById("stratergy_display").src = "jupyter_html/bad_state.html"
 
-        case "Hmmmm this sounds interesting. Have you tried regression testing?":
-            title.textContent = window.getRegressionTesting.title;
-            explanation.textContent = window.getRegressionTesting.explanation;
-            example.textContent = window.getRegressionTesting.example;
-            additions.textContent = window.getRegressionTesting.additions;
-            codingExample.textContent = window.getRegressionTesting.codingExample;
-            message = window.getRegressionTesting.title;
-            break;
-        case "Ok. Have you tried using the bad state stratergy?":
-            title.textContent = window.getBadState.title;
-            explanation.textContent = window.getBadState.explanation;
-            example.textContent = window.getBadState.example;
-            additions.textContent = window.getBadState.additions;
-            codingExample.textContent = window.getBadState.codingExample;
-            message = window.getBadState.title;
-            break;
-
-        case "Did you try identifying Relative Code and State?":
-          title.textContent = window.getIdentifyRelativeCode.title;
-          explanation.textContent = window.getIdentifyRelativeCode.explanation;
-          example.textContent = window.getIdentifyRelativeCode.example;
-          additions.textContent = window.getIdentifyRelativeCode.additions;
-          codingExample.textContent = window.getIdentifyRelativeCode.codingExample;
-          message = window.getIdentifyRelativeCode.title;
-          break;
+  //   switch (strategyId) {
+  //       case "Did you try minimizing your test cases?":
+  //           title.textContent = window.getTestCaseMinimization.title;
+  //           explanation.textContent = window.getTestCaseMinimization.explanation;
+  //           example.textContent = window.getTestCaseMinimization.example;
+  //           codingExample.textContent = window.getTestCaseMinimization.codingExample;
+  //           additions.textContent = window.getTestCaseMinimization.additions;
+  //           message = window.getTestCaseMinimization.title;
+  //           break;
         
-        case "Have you tried to ask an expert?":
-          title.textContent = window.getAskAnExpert.title;
-          explanation.textContent = window.getAskAnExpert.explanation;
-          example.textContent = window.getAskAnExpert.example;
-          additions.textContent = window.getAskAnExpert.additions;
-          codingExample.textContent = window.getAskAnExpert.codingExample;
-          message = window.getAskAnExpert.title;
-          break;
-        case "Have you tried using print statements?":
-          title.textContent = window.getPrintStatements.title;
-          explanation.textContent = window.getPrintStatements.explanation;
-          example.textContent = window.getPrintStatements.example;
-          additions.textContent = window.getPrintStatements.additions;
-          codingExample.textContent = window.getPrintStatements.codingExample;
-          message = window.getPrintStatements.title;
-          break;      
-    }
-  
-  
+  //       case "Have you tried narryowing down the responsible code?":
+  //           title.textContent = window.getNarrowingResponsibleCode.title;
+  //           explanation.textContent = window.getNarrowingResponsibleCode.explanation;
+  //           example.textContent = window.getNarrowingResponsibleCode.example;
+  //           additions.textContent = window.getNarrowingResponsibleCode.additions;
+  //           codingExample.textContent = window.getNarrowingResponsibleCode.codingExample;
+  //           message = window.getNarrowingResponsibleCode.title;
+  //           break;
+
+  //       case "Hmmmm this sounds interesting. Have you tried regression testing?":
+  //           title.textContent = window.getRegressionTesting.title;
+  //           explanation.textContent = window.getRegressionTesting.explanation;
+  //           example.textContent = window.getRegressionTesting.example;
+  //           additions.textContent = window.getRegressionTesting.additions;
+  //           codingExample.textContent = window.getRegressionTesting.codingExample;
+  //           message = window.getRegressionTesting.title;
+  //           break;
+  //       case "Ok. Have you tried using the bad state stratergy?":
+  //           title.textContent = window.getBadState.title;
+  //           explanation.textContent = window.getBadState.explanation;
+  //           example.textContent = window.getBadState.example;
+  //           additions.textContent = window.getBadState.additions;
+  //           codingExample.textContent = window.getBadState.codingExample;
+  //           message = window.getBadState.title;
+  //           break;
+
+  //       case "Did you try identifying Relative Code and State?":
+  //         title.textContent = window.getIdentifyRelativeCode.title;
+  //         explanation.textContent = window.getIdentifyRelativeCode.explanation;
+  //         example.textContent = window.getIdentifyRelativeCode.example;
+  //         additions.textContent = window.getIdentifyRelativeCode.additions;
+  //         codingExample.textContent = window.getIdentifyRelativeCode.codingExample;
+  //         message = window.getIdentifyRelativeCode.title;
+  //         break;
+        
+  //       case "Have you tried to ask an expert?":
+  //         title.textContent = window.getAskAnExpert.title;
+  //         explanation.textContent = window.getAskAnExpert.explanation;
+  //         example.textContent = window.getAskAnExpert.example;
+  //         additions.textContent = window.getAskAnExpert.additions;
+  //         codingExample.textContent = window.getAskAnExpert.codingExample;
+  //         message = window.getAskAnExpert.title;
+  //         break;
+  //       case "Have you tried using print statements?":
+  //         title.textContent = window.getPrintStatements.title;
+  //         explanation.textContent = window.getPrintStatements.explanation;
+  //         example.textContent = window.getPrintStatements.example;
+  //         additions.textContent = window.getPrintStatements.additions;
+  //         codingExample.textContent = window.getPrintStatements.codingExample;
+  //         message = window.getPrintStatements.title;
+  //         break;      
+  //   }
     infoSection.classList.remove("hide-info");
     infoSection.classList.add("expand-info");
   }, 1000); // Simulating delay for bot response
-  
+
+  message = "test"
+
   if (newButton) {  
     setTimeout(() => {
       const button = document.createElement('button');
