@@ -6,22 +6,12 @@ const userInput = document.getElementById("userInput");
 const send = document.getElementById("send");
 const strat_display = document.querySelector(".strategy-display");
 
-// strat_display.innerHTML = ""; // Clear any existing content
-
-// var jupyter = document.createElement("iframe");
-// jupyter.src = "cse152a_wi25_hw1.html"; 
-// jupyter.style.width = "100%";
-// jupyter.style.height = "100%"; 
-
-// chatArea.appendChild(jupyter);
-
-
 var message_entry = 0;
 infoSection.classList.remove("hide-info");
 infoSection.classList.add("expand-info");
 
 // generate a random conversation id
-const conversation_id = Math.floor(Math.random() * 1000000);
+const conversation_id = Math.floor(Math.random() * 100000000);
 const responses = new Set();
 isButton = false;
 button_id = "";
@@ -32,9 +22,16 @@ botMsg.style.textAlign = "left";
 chatArea.appendChild(botMsg);
 chatArea.scrollTop = chatArea.scrollHeight;
 
+yes_button = ""
+no_button = ""
+yes_but_button = ""
+
 async function sendMessage() {
   userMessage = "";
   if (isButton){
+    yes_button.remove()
+    yes_but_button.remove()
+    no_button.remove()
     switch(button_id){
       case "yes":
         userMessage = "yes";
@@ -47,10 +44,8 @@ async function sendMessage() {
       case "yes, but new strat":
         userMessage = "yes, but new strat"
     }
-
   }
   else {
-    console.log("hello world");
     userMessage = userInput.value;
     if (userMessage.trim() === "") return; // Don't send if input is empty
     userInput.remove();
@@ -60,14 +55,11 @@ async function sendMessage() {
     restart.textContent = 'restart'; // Set the button text
     restart.id = message_entry; // Add an ID (optional)
     restart.className = 'btn'; // Add a class (optional)
+    
     restart.addEventListener('click', () => {
-      chatArea.innerHTML = ""
-      restart.remove()
-      let div = document.querySelector('.chatbot');
-      div.appendChild(userInput);
-      div.appendChild(send);
-      
+      location.reload();
     });
+    
     let div = document.querySelector('.chatbot');
     div.appendChild(restart);
   }
@@ -95,13 +87,22 @@ async function sendMessage() {
 
     }
   }
-  // Hide the info section and expand the chatbot back to full width
-  
-  // Simulate chatbot response with a delay
-  var botMsg = await getResponse();
-  if (botMsg == null){
-    return;
+
+  var botMsg = null
+  if (responses.size == 4){
+    const botMsgElem = document.createElement("p");
+    botMsgElem.textContent = "Bot: " + "No more stratergies, please come back later!";
+    botMsgElem.style.textAlign = "left";
+    chatArea.appendChild(botMsgElem);
+    chatArea.scrollTop = chatArea.scrollHeight;
+    console.log(botMessage);
+    return
   }
+
+  while (botMsg == null){
+    botMsg = await getResponse();
+  }
+  
   updateStrategyContent(botMsg, true);
 
   // Shrink the chatbot to make room for the info section
@@ -118,7 +119,7 @@ async function sendMessage() {
               'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            "session-id": String(conversation_id),
+            "session_id": String(conversation_id),
             "entry_number": String(message_entry),
             "Email": String(getCookie("userEmail")),
             "question": userMessage,
@@ -135,17 +136,28 @@ async function sendMessage() {
 
   // Clear the input
   userInput.value = "";
+  console.log(message_entry)
   message_entry += 1;
 }
 
+function make_button(mes){
+  console.log(mes)
+  const button = document.createElement('button');
+  button.textContent = mes; // Set the button text
+  button.id = mes; // Add an ID (optional)
+  button.className = 'btn'; // Add a class (optional)
+
+  button.addEventListener('click', () => {
+      isButton = true;
+      button_id = mes;
+      sendMessage();
+  });
+
+  return button;
+}
+
 function getResponse(){
-  if (responses.size == 6){
-    const botMsgElem = document.createElement("p");
-    botMsgElem.textContent = "Bot: " + "No more stratergies, please come back later!";
-    botMsgElem.style.textAlign = "left";
-    chatArea.appendChild(botMsgElem);
-    chatArea.scrollTop = chatArea.scrollHeight;
-    console.log(botMessage);
+  if (responses.size == 4){
     return null;
   }
   var botMessage = null;
@@ -156,14 +168,15 @@ function getResponse(){
     })
     .then(response => response.json())
     .then(data => {
-        // Append the response from the backend to the conversation
-        botMessage = data;
         if (responses.has(data)) {
+          console.log("hello there!")
+          botMessage = null;
           return null;
         }
         else{
           responses.add(data)
         }
+        botMessage = data;
         const botMsgElem = document.createElement("p");
         botMsgElem.textContent = "Bot: " + botMessage;
         botMsgElem.style.textAlign = "left";
@@ -177,51 +190,76 @@ function getResponse(){
           botMsgFeedback.textContent = "Bot: Was this a helpful response? If you didn't find it helpful, please type no and I will give you another response. If you found the stratergy to be helpful, please type yes to end the conversation.";
           chatArea.appendChild(botMsgFeedback);
 
-          const button = document.createElement('button');
-          button.textContent = 'yes'; // Set the button text
-          button.id = "yes"; // Add an ID (optional)
-          button.className = 'btn'; // Add a class (optional)
+          yes_button = make_button('yes')
+          no_button = make_button('no')
+          yes_but_button = make_button('yes, but new strat')
 
-          button.addEventListener('click', () => {
-              isButton = true;
-              button_id = "yes";
-              sendMessage();
-          });
-          chatArea.appendChild(button);
-
-          const button2 = document.createElement('button');
-          button2.textContent = 'no'; // Set the button text
-          button2.id = "no"; // Add an ID (optional)
-          button2.className = 'btn'; // Add a class (optional)
-
-          button2.addEventListener('click', () => {
-              isButton = true;
-              button_id = "no";
-              sendMessage();
-          });
-          chatArea.appendChild(button2);
-
-          const button3 = document.createElement('button');
-          button3.textContent = 'yes, but new strat'; // Set the button text
-          button3.id = "yes, but new strat"; // Add an ID (optional)
-          button3.className = 'btn'; // Add a class (optional)
-
-          button3.addEventListener('click', () => {
-              isButton = true;
-              button_id = "yes, but new strat";
-              sendMessage();
-          });
-          chatArea.appendChild(button3);
+          chatArea.appendChild(yes_button)
+          chatArea.appendChild(yes_but_button)
+          chatArea.appendChild(no_button)
 
           chatArea.scrollTop = chatArea.scrollHeight;
         }, 2000);
         return data;        
-    })
-    .catch(error => console.error('Error:', error));
-  }  
+    }).catch(error => console.error('Error:', error));
+  }
+  
+  if (botMessage == null){
+    console.log("Nothing")
+  }
   console.log(botMessage);
 
+
   return botMessage;
+}
+
+function updateStrategyContent(strategyId, newButton) {
+  infoSection.classList.remove("expand-info");
+  infoSection.classList.add("hide-info");
+
+  message = ""
+  setTimeout(() => {
+
+    switch (strategyId) {
+        case "Did you try minimizing your test cases?":
+          document.getElementById("stratergy_display").src = "jupyter_html/test_case_min.html"
+          message = "Test Case minimization"
+          break;
+            
+        case "Ok. Have you tried using the bad state stratergy?":
+          document.getElementById("stratergy_display").src = "jupyter_html/bad_state.html"
+          message = "Bad State"
+          break;
+            
+        case "Have you tried using print statements?":
+          document.getElementById("stratergy_display").src = "jupyter_html/print_statements.html"
+          message = "Print Statements"
+          break;      
+
+        case "Have you tried carefulling tracing through your code?":
+          document.getElementById("stratergy_display").src = "jupyter_html/read_code.html"
+          message = "Tracing Code"
+          break;      
+    }
+    infoSection.classList.remove("hide-info");
+    infoSection.classList.add("expand-info");
+  }, 1000); // Simulating delay for bot response
+
+  if (newButton) {  
+    setTimeout(() => {
+      const button = document.createElement('button');
+      button.textContent = 'Click to see "' + message + '" again'; // Set the button text
+      button.id = message_entry; // Add an ID (optional)
+      button.className = 'btn'; // Add a class (optional)
+
+      button.addEventListener('click', () => {
+          updateStrategyContent(strategyId, false);
+      });
+      chatArea.appendChild(button);
+    }, 1000); // Simulating delay for bot response
+  }
+
+  return message;
 }
 
 // Helper functions to handle cookies
@@ -329,114 +367,4 @@ function enableInputStorage() {
 function disableInputStorage() {
   console.log("Consent declined. Input storage is disabled.");
   // Code to disable input storage (e.g., prevent messages from being stored)
-}
-
-function updateStrategyContent(strategyId, newButton) {
-  // const title = document.getElementById('strategy-title');
-  // const explanation = document.getElementById('strategy-explanation');
-  // const example = document.getElementById('strategy-example');
-  // const codingExample = document.getElementById('strategy-coding-example');
-  // const additions = document.getElementById('strategy-additions');
-  
-  // var message = ""
-
-  infoSection.classList.remove("expand-info");
-  infoSection.classList.add("hide-info");
-
-  // chatbotSection.classList.remove("slide-right");
-  // chatbotSection.classList.add("chatbot-expanded"); // Expand chatbot
-
-  // var jupyter = document.createElement("iframe");
-  // jupyter.src = "cse152a_wi25_hw1.html"; 
-  // jupyter.style.width = "100%";
-  // jupyter.style.height = "600px";
-
-  // strat_display.appendChild(jupyter);
-  
-  setTimeout(() => {
-    document.getElementById("stratergy_display").src = "jupyter_html/bad_state.html"
-
-  //   switch (strategyId) {
-  //       case "Did you try minimizing your test cases?":
-  //           title.textContent = window.getTestCaseMinimization.title;
-  //           explanation.textContent = window.getTestCaseMinimization.explanation;
-  //           example.textContent = window.getTestCaseMinimization.example;
-  //           codingExample.textContent = window.getTestCaseMinimization.codingExample;
-  //           additions.textContent = window.getTestCaseMinimization.additions;
-  //           message = window.getTestCaseMinimization.title;
-  //           break;
-        
-  //       case "Have you tried narryowing down the responsible code?":
-  //           title.textContent = window.getNarrowingResponsibleCode.title;
-  //           explanation.textContent = window.getNarrowingResponsibleCode.explanation;
-  //           example.textContent = window.getNarrowingResponsibleCode.example;
-  //           additions.textContent = window.getNarrowingResponsibleCode.additions;
-  //           codingExample.textContent = window.getNarrowingResponsibleCode.codingExample;
-  //           message = window.getNarrowingResponsibleCode.title;
-  //           break;
-
-  //       case "Hmmmm this sounds interesting. Have you tried regression testing?":
-  //           title.textContent = window.getRegressionTesting.title;
-  //           explanation.textContent = window.getRegressionTesting.explanation;
-  //           example.textContent = window.getRegressionTesting.example;
-  //           additions.textContent = window.getRegressionTesting.additions;
-  //           codingExample.textContent = window.getRegressionTesting.codingExample;
-  //           message = window.getRegressionTesting.title;
-  //           break;
-  //       case "Ok. Have you tried using the bad state stratergy?":
-  //           title.textContent = window.getBadState.title;
-  //           explanation.textContent = window.getBadState.explanation;
-  //           example.textContent = window.getBadState.example;
-  //           additions.textContent = window.getBadState.additions;
-  //           codingExample.textContent = window.getBadState.codingExample;
-  //           message = window.getBadState.title;
-  //           break;
-
-  //       case "Did you try identifying Relative Code and State?":
-  //         title.textContent = window.getIdentifyRelativeCode.title;
-  //         explanation.textContent = window.getIdentifyRelativeCode.explanation;
-  //         example.textContent = window.getIdentifyRelativeCode.example;
-  //         additions.textContent = window.getIdentifyRelativeCode.additions;
-  //         codingExample.textContent = window.getIdentifyRelativeCode.codingExample;
-  //         message = window.getIdentifyRelativeCode.title;
-  //         break;
-        
-  //       case "Have you tried to ask an expert?":
-  //         title.textContent = window.getAskAnExpert.title;
-  //         explanation.textContent = window.getAskAnExpert.explanation;
-  //         example.textContent = window.getAskAnExpert.example;
-  //         additions.textContent = window.getAskAnExpert.additions;
-  //         codingExample.textContent = window.getAskAnExpert.codingExample;
-  //         message = window.getAskAnExpert.title;
-  //         break;
-  //       case "Have you tried using print statements?":
-  //         title.textContent = window.getPrintStatements.title;
-  //         explanation.textContent = window.getPrintStatements.explanation;
-  //         example.textContent = window.getPrintStatements.example;
-  //         additions.textContent = window.getPrintStatements.additions;
-  //         codingExample.textContent = window.getPrintStatements.codingExample;
-  //         message = window.getPrintStatements.title;
-  //         break;      
-  //   }
-    infoSection.classList.remove("hide-info");
-    infoSection.classList.add("expand-info");
-  }, 1000); // Simulating delay for bot response
-
-  message = "test"
-
-  if (newButton) {  
-    setTimeout(() => {
-      const button = document.createElement('button');
-      button.textContent = 'Click to see "' + message + '" again'; // Set the button text
-      button.id = message_entry; // Add an ID (optional)
-      button.className = 'btn'; // Add a class (optional)
-
-      button.addEventListener('click', () => {
-          updateStrategyContent(strategyId, false);
-      });
-      chatArea.appendChild(button);
-    }, 1000); // Simulating delay for bot response
-  }
-
-  return message;
 }
