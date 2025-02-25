@@ -16,15 +16,19 @@ const responses = new Set();
 isButton = false;
 button_id = "";
 
-const botMsg = document.createElement("p");
-botMsg.textContent = "Bot: " + "Hello, I am debugging chatbot! Please describe your bug and I will try to give you a stratergy to help";
-botMsg.style.textAlign = "left";
-chatArea.appendChild(botMsg);
-chatArea.scrollTop = chatArea.scrollHeight;
-
 yes_button = ""
 no_button = ""
 yes_but_button = ""
+
+function addBotResponse(message){
+  const botMsgElem = document.createElement("p");
+  botMsgElem.textContent = "Bot: " + message;
+  botMsgElem.style.textAlign = "left";
+  chatArea.appendChild(botMsgElem);
+  chatArea.scrollTop = chatArea.scrollHeight; 
+}
+
+addBotResponse("Hello, I am debugging chatbot! Please describe your bug and I will try to give you a stratergy to help");
 
 async function sendMessage() {
   userMessage = "";
@@ -75,11 +79,7 @@ async function sendMessage() {
   if ((message_entry > 0)){
     if (userMessage.toLowerCase() == "yes"){
       setTimeout(() => {
-        const botMsgElem = document.createElement("p");
-        botMsgElem.textContent = "Bot: " + "Thank you so much for using our tool! Please fill out this short survey on your experience with this tool.";
-        botMsgElem.style.textAlign = "left";
-        chatArea.appendChild(botMsgElem);
-        chatArea.scrollTop = chatArea.scrollHeight;
+        addBotResponse("Thank you so much for using our tool! Please fill out this short survey on your experience with this tool.");
         console.log(botMessage);
       }, 1000)
       userInput.value = ""
@@ -90,11 +90,7 @@ async function sendMessage() {
 
   var botMsg = null
   if (responses.size == 4){
-    const botMsgElem = document.createElement("p");
-    botMsgElem.textContent = "Bot: " + "No more stratergies, please come back later!";
-    botMsgElem.style.textAlign = "left";
-    chatArea.appendChild(botMsgElem);
-    chatArea.scrollTop = chatArea.scrollHeight;
+    addBotResponse("No more stratergies, please come back later!")
     console.log(botMessage);
     return
   }
@@ -104,10 +100,6 @@ async function sendMessage() {
   }
   
   updateStrategyContent(botMsg, true);
-
-  // Shrink the chatbot to make room for the info section
-  setTimeout(() => {
-  }, 1000)
 
   if (getCookie("userConsent")) {
     console.log(getCookie("userEmail"));
@@ -177,18 +169,10 @@ function getResponse(){
           responses.add(data)
         }
         botMessage = data;
-        const botMsgElem = document.createElement("p");
-        botMsgElem.textContent = "Bot: " + botMessage;
-        botMsgElem.style.textAlign = "left";
-        chatArea.appendChild(botMsgElem);
-        console.log(botMessage);
-        chatArea.scrollTop = chatArea.scrollHeight;
+        addBotResponse(botMessage);
   
         setTimeout(() => {
-          const botMsgFeedback = document.createElement("p");
-          botMsgFeedback.style.textAlign = "left";
-          botMsgFeedback.textContent = "Bot: Was this a helpful response? If you didn't find it helpful, please type no and I will give you another response. If you found the stratergy to be helpful, please type yes to end the conversation.";
-          chatArea.appendChild(botMsgFeedback);
+          addBotResponse("Was this a helpful response? If you didn't find it helpful, please type no and I will give you another response. If you found the stratergy to be helpful, please type yes to end the conversation.")
 
           yes_button = make_button('yes')
           no_button = make_button('no')
